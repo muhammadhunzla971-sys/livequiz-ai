@@ -1,0 +1,69 @@
+[project]
+name = "livequiz-backend"
+version = "0.1.0"
+description = "LiveQuiz AI backend"
+requires-python = ">=3.11"
+dependencies = [
+  "fastapi>=0.115",
+  "uvicorn[standard]>=0.30",
+  "pydantic>=2.7",
+  "pydantic-settings>=2.3",
+  "email-validator>=2.1",
+  "sqlalchemy[asyncio]>=2.0.30",
+  "asyncpg>=0.29",
+  "alembic>=1.13",
+  "redis>=5.0",
+  "argon2-cffi>=23.1",
+  "pyjwt>=2.8",
+  "httpx>=0.27",
+  "python-json-logger>=2.0",
+  "qrcode>=7.4",
+  "reportlab>=4.0",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=8.2",
+  "pytest-asyncio>=0.23",
+  "aiosqlite>=0.20",
+  "fakeredis>=2.23",
+  "ruff>=0.5",
+  "mypy>=1.10",
+  "locust>=2.29",
+  "websockets>=12.0",
+]
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["app*"]
+
+[tool.setuptools.package-data]
+app = ["llm/prompts/*.md"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+extend-exclude = ["app/db/migrations/versions"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "ASYNC"]
+
+[tool.mypy]
+python_version = "3.11"
+strict = false
+disallow_untyped_defs = true
+ignore_missing_imports = true
+plugins = ["pydantic.mypy"]
+
+# redis-py's typing stubs return `bytes | str` for every read even with decode_responses=True.
+# The engine always runs with decode_responses=True, so these specific codes are noise there.
+[[tool.mypy.overrides]]
+module = ["app.services.room_engine", "app.ws.manager"]
+disable_error_code = ["arg-type", "str-bytes-safe", "assignment", "no-any-return", "return-value"]
