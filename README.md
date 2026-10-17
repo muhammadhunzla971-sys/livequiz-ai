@@ -1,12 +1,40 @@
 # LiveQuiz AI
 
-A real-time classroom quiz platform. A teacher describes a topic, AI writes the quiz, students
-join from their phones with a PIN, and everyone plays live with a leaderboard. Afterwards the teacher
-gets a report (hardest questions, weak topics, who needs help) with an AI-written summary.
+**AI writes the quiz. Your class plays it live.**
 
-**Stack:** FastAPI (async) · WebSockets · Postgres · Redis · React + TypeScript + Vite · Groq (any
-OpenAI-compatible LLM).
+A real-time classroom quiz platform. A teacher types a topic and AI writes the quiz. Students join
+from their phones with a PIN or QR code and play together with a live leaderboard. Afterwards the
+teacher gets a report with the hardest questions, weak topics and an AI-written summary.
 
+![CI](https://github.com/muhammadhunzla971-sys/livequiz-ai/actions/workflows/ci.yml/badge.svg)
+![Python](https://img.shields.io/badge/Python-3.12-3776AB?logo=python&logoColor=white)
+![FastAPI](https://img.shields.io/badge/FastAPI-async-009688?logo=fastapi&logoColor=white)
+![React](https://img.shields.io/badge/React-TypeScript-61DAFB?logo=react&logoColor=black)
+![Redis](https://img.shields.io/badge/Redis-pub%2Fsub-DC382D?logo=redis&logoColor=white)
+![Postgres](https://img.shields.io/badge/Postgres-16-4169E1?logo=postgresql&logoColor=white)
+
+![LiveQuiz AI overview](docs/images/overview.png)
+
+## Features
+- **AI quiz generation**: plan, write, validate and retry, with live progress (SSE). Works in several languages.
+- **Live games over WebSockets**: PIN or QR join, timer, answer counts, pause, end early, kick player.
+- **Fair scoring**: computed on the server only (speed, streak, partial credit for multi-select).
+- **Reconnect safe**: a student who loses signal returns to the same game without losing answers.
+- **Teacher reports**: class, topic, question and student stats, AI summary, CSV and PDF export.
+- **English and Urdu** with right-to-left layout, dark mode and sound toggle.
+- **Hardened**: rate limits, account lock, log redaction, body size cap, prod startup guard, `/metrics`.
+
+![Teacher report with AI summary](docs/images/report.png)
+
+## How it was verified
+| What | Result |
+|---|---|
+| Backend tests (ruff, mypy, pytest) | 116 passed |
+| Frontend tests (vitest) | 45 passed |
+| Browser E2E (Playwright): 1 teacher, 3 students, full game and report | passed |
+| Load test: 200 players, 5 questions, real Redis | p95 broadcast 21 ms, 1000/1000 answers acknowledged |
+
+## Architecture
 ```mermaid
 flowchart LR
   T[Teacher UI] -->|HTTPS + WSS| API
